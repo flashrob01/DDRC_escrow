@@ -1,0 +1,374 @@
+<ng-container *ngIf="state$ | async as s; else loading">
+  <p-table
+    [value]="s.projects"
+    [autoLayout]="true"
+    dataKey="identifier"
+    styleClass="project-table p-datatable-striped"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    responsiveLayout="scroll"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[10, 25, 50]"
+  >
+    <ng-template pTemplate="header">
+      <tr class="project-title-row">
+        <th colspan="7">
+          <h2>Browse Projects</h2>
+        </th>
+      </tr>
+      <tr class="project-header-row">
+        <th rowspan="2"><span class="emoji">📝</span> Description</th>
+        <th rowspan="2"><span class="emoji">📝</span> Creator</th>
+        <th rowspan="2"><span class="emoji">⌛</span> Status</th>
+        <th colspan="2"><span class="emoji">⏱️</span> Duration</th>
+        <th colspan="2"><span class="emoji">💰</span> Staking</th>
+      </tr>
+      <tr class="project-header-row">
+        <th>Created</th>
+        <th>Deadline</th>
+        <th>Funding</th>
+        <th>
+          Security / RSI
+          <i
+            class="pi pi-question-circle text-xs"
+            tooltipPosition="left"
+            pTooltip="The amount of tokens staked by the creator and the Refund Strength Index"
+          ></i>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-project let-expanded="expanded">
+      <tr class="project-row-content">
+        <td>
+          <div
+            class="mt-1 mb-1 flex justify-content-between align-items-center"
+          >
+            <div>
+              <div class="flex">
+                <div>
+                  <button
+                    type="button"
+                    pButton
+                    pRipple
+                    [pRowToggler]="project"
+                    class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="
+                      expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'
+                    "
+                  ></button>
+                </div>
+                <div class="flex flex-column ml-5">
+                  <div>
+                    <b
+                      ><a
+                        [routerLink]="[
+                          '/projects/' + encode(project.identifier)
+                        ]"
+                        >{{ project.identifier }}</a
+                      ></b
+                    >
+                    <img
+                      class="ml-2"
+                      [src]="
+                        'assets/images/tokens/' + project.tokenSymbol + '.png'
+                      "
+                      width="17"
+                    />
+                  </div>
+                  {{ project.description | truncate: [80] }}
+                </div>
+              </div>
+            </div>
+            <div
+              pTooltip="Supporters"
+              class="
+                buyers
+                flex flex-column
+                align-items-center
+                justify-content-center
+              "
+            >
+              <i class="pi pi-users"></i>
+              {{ project.buyerCount | number }}
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="flex justify-content-center align-items-center">
+            <ritmin-avatar
+              [pTooltip]="project.creator"
+              [svg]="project.svg"
+              [pxWidth]="35"
+            ></ritmin-avatar>
+          </div>
+        </td>
+        <td class="text-center">
+          <p-tag
+            [value]="project.status"
+            [severity]="project.status === 'FINISHED' ? 'success' : 'info'"
+          ></p-tag>
+        </td>
+
+        <td>
+          {{ project.creationTimestamp | date: 'longDate' }}
+        </td>
+        <td>
+          {{
+            project.milestones[project.milestonesCount - 1].endTimestamp
+              | date: 'longDate'
+          }}
+        </td>
+        <td>
+          <p>
+            {{
+              project.maxTokenSoldCount - project.remainTokenCount
+                | tokenNumber: project.tokenSymbol
+            }}
+            /
+            {{ project.maxTokenSoldCount | tokenNumber: project.tokenSymbol }}
+            {{ project.tokenSymbol }}
+          </p>
+          <div
+            class="text-center text-md font-bold"
+            [ngClass]="project.remainTokenCount === 0 ? 'finished' : 'progress'"
+            [ngStyle]="{
+              width:
+                ((project.maxTokenSoldCount - project.remainTokenCount) /
+                  project.maxTokenSoldCount) *
+                  100 +
+                '%'
+            }"
+          >
+            <span class="white-space-nowrap">
+              {{
+                ((project.maxTokenSoldCount - project.remainTokenCount) /
+                  project.maxTokenSoldCount) *
+                  100 | number
+              }}
+              %
+            </span>
+          </div>
+        </td>
+        <td>
+          {{
+            project.stakePer100Token * project.maxTokenSoldCount
+              | tokenNumber: project.tokenSymbol
+          }}
+          {{ project.tokenSymbol }} /
+          {{
+            (project.thresholdMilestoneIndex / (project.milestonesCount - 1)
+              | number) || 0
+          }}
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="rowexpansion" let-project>
+      <tr>
+        <td colspan="6">
+          <div class="flex">
+            <!-- PROJECT CLOSED FOR FUNDING STATISTICS -->
+            <div
+              *ngIf="
+                project.status !== 'ONGOING' ||
+                project.creator === globalState.get('address')
+              "
+              class="flex flex-column support-project-panel p-fluid"
+            >
+              <div class="mb-4">
+                <span class="font-semibold text-lg mr-2">🔥 Statistics </span>
+                <p-chart
+                  type="pie"
+                  [data]="project.stakedTokensChartData"
+                  [style]="{ width: '100%', height: '100px' }"
+                ></p-chart>
+              </div>
+            </div>
+            <!-- SUPPORT PROJECT ACTION -->
+            <div
+              *ngIf="
+                project.status === 'ONGOING' &&
+                project.creator !== globalState.get('address')
+              "
+              class="flex flex-column support-project-panel p-fluid"
+            >
+              <div class="mb-4">
+                <span class="font-semibold text-lg mr-2"
+                  >🔥 Fund this project</span
+                >
+              </div>
+
+              <ng-container
+                *ngIf="(address$ | async) !== null; else connectWallet"
+              >
+                <div
+                  *ngIf="
+                    globalState.get('balances') &&
+                    globalState.get('balances')[project.tokenSymbol] as balance
+                  "
+                  class="text-center"
+                >
+                  Available balance:
+                  {{ balance }}
+                  {{ project.tokenSymbol }}
+                </div>
+                <br />
+                <br />
+
+                <span class="p-float-label">
+                  <p-inputNumber
+                    mode="decimal"
+                    [(ngModel)]="project.stakeInput"
+                    [minFractionDigits]="
+                      tokenService.getTokenBySymbol(project.tokenSymbol)
+                        .decimals
+                    "
+                    [maxFractionDigits]="
+                      tokenService.getTokenBySymbol(project.tokenSymbol)
+                        .decimals
+                    "
+                    [showButtons]="true"
+                    inputId="stacked"
+                    id="supportInput"
+                    [min]="0"
+                    [max]="
+                      project.remainTokenCount /
+                      math.pow(
+                        10,
+                        tokenService.getTokenBySymbol(project.tokenSymbol)
+                          .decimals
+                      )
+                    "
+                    [suffix]="' ' + project.tokenSymbol"
+                  ></p-inputNumber>
+                  <label for="supportInput">Choose an amount</label>
+                </span>
+                <div class="flex flex-column mt-3 text-sm">
+                  <div class="flex justify-content-between mb-1">
+                    <span>Funding Goal: </span>
+                    <span
+                      >{{
+                        project.maxTokenSoldCount
+                          | tokenNumber: project.tokenSymbol
+                      }}
+                      {{ project.tokenSymbol }}</span
+                    >
+                  </div>
+                  <div class="flex justify-content-between mb-1">
+                    <span>Remaining: </span
+                    ><span
+                      >{{
+                        project.remainTokenCount
+                          | tokenNumber: project.tokenSymbol
+                      }}
+                      {{ project.tokenSymbol }}</span
+                    >
+                  </div>
+                  <div class="flex justify-content-between mb-1">
+                    <span>Developer Fee: </span><span>0.01 GAS</span>
+                  </div>
+                </div>
+                <button
+                  pButton
+                  label="Stake Tokens"
+                  class="p-button-warning mt-3"
+                  type="button"
+                  [disabled]="!project.stakeInput"
+                  (click)="onStakeBtnClicked$.next(project)"
+                ></button>
+              </ng-container>
+              <ng-template #connectWallet>
+                <div class="p-fluid">
+                  <ritmin-connect-wallet
+                    placeholder="Connect Wallet"
+                  ></ritmin-connect-wallet>
+                </div>
+              </ng-template>
+            </div>
+            <!-- MILESTONE OVERVIEW -->
+            <div class="ms-overview-panel">
+              <span class="font-semibold text-lg mr-2">🔥 Milestones </span>
+
+              <p-timeline
+                [value]="getProjectTimeline(project)"
+                layout="horizontal"
+                styleClass="milestone-timeline"
+                align="bottom"
+              >
+                <ng-template pTemplate="marker" let-event>
+                  <div
+                    [ngClass]="event.class"
+                    [style.backgroundColor]="event.color"
+                    [style.borderColor]="event.borderColor"
+                  ></div>
+                </ng-template>
+                <ng-template pTemplate="content" let-milestone>
+                  <div
+                    class="flex flex-column justify-content-evenly text-sm"
+                    style="height: 30px"
+                  >
+                    <span>{{ milestone.text }}</span>
+                    <small>{{ milestone.subtext }}</small>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="opposite" let-milestone>
+                  <div class="flex flex-column justify-content-evenly text-sm">
+                    <span [hidden]="!milestone.showDate">{{
+                      milestone.date | date
+                    }}</span>
+                  </div>
+                </ng-template>
+              </p-timeline>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-container>
+
+<ng-template #loading>
+  <p-table
+    [value]="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+    [autoLayout]="true"
+    dataKey="identifier"
+    styleClass="project-table p-datatable-striped p-datatable-gridlines"
+  >
+    <ng-template pTemplate="header">
+      <tr class="project-title-row">
+        <th colspan="6">
+          <h2>Browse Projects</h2>
+        </th>
+      </tr>
+      <tr class="project-header-row">
+        <th rowspan="2"><span class="emoji">📝</span> Description</th>
+        <th rowspan="2"><span class="emoji">⌛</span> Status</th>
+        <th colspan="2"><span class="emoji">⏱️</span> Duration</th>
+        <th colspan="2"><span class="emoji">💰</span> Staking</th>
+      </tr>
+      <tr class="project-header-row">
+        <th>Created</th>
+        <th>Deadline</th>
+        <th>Funding</th>
+        <th>
+          Security / RSI
+          <i
+            class="pi pi-question-circle text-xs"
+            tooltipPosition="left"
+            pTooltip="The amount of tokens staked by the creator and the Refund Strength Index"
+          ></i>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-project>
+      <tr>
+        <td><p-skeleton></p-skeleton></td>
+        <td><p-skeleton></p-skeleton></td>
+        <td><p-skeleton></p-skeleton></td>
+        <td><p-skeleton></p-skeleton></td>
+        <td><p-skeleton></p-skeleton></td>
+        <td><p-skeleton></p-skeleton></td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-template>
