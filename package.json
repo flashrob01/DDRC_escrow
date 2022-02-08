@@ -2,6 +2,8 @@
   "name": "ritmin-frontend",
   "version": "0.0.0",
   "license": "MIT",
+  "homepage": "https://flashrob01.github.io/DDRC_escrow",
+
   "scripts": {
     "ng": "nx",
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main",
@@ -25,7 +27,9 @@
     "update": "nx migrate latest",
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
-    "help": "nx help"
+    "help": "nx help",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "private": true,
   "dependencies": {
@@ -78,6 +82,7 @@
     "eslint": "7.22.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.10.3",
+    "gh-pages": "^3.2.3",
     "jest": "27.0.3",
     "jest-preset-angular": "9.0.4",
     "prettier": "^2.3.1",
