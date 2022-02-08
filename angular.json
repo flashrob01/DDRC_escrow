@@ -1,0 +1,280 @@
+{
+  "version": 1,
+  "projects": {
+    "neko-front": {
+      "projectType": "application",
+      "root": "apps/neko-front",
+      "sourceRoot": "apps/neko-front/src",
+      "prefix": "ritmin-frontend",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/neko-front",
+            "index": "apps/neko-front/src/index.html",
+            "main": "apps/neko-front/src/main.ts",
+            "polyfills": "apps/neko-front/src/polyfills.ts",
+            "tsConfig": "apps/neko-front/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "apps/neko-front/src/favicon.ico",
+              "apps/neko-front/src/assets"
+            ],
+            "styles": ["apps/neko-front/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "apps/neko-front/src/environments/environment.ts",
+                  "with": "apps/neko-front/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "neko-front:build:production"
+            },
+            "development": {
+              "browserTarget": "neko-front:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "neko-front:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/neko-front/src/**/*.ts",
+              "apps/neko-front/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/neko-front"],
+          "options": {
+            "jestConfig": "apps/neko-front/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "neko-front-e2e": {
+      "root": "apps/neko-front-e2e",
+      "sourceRoot": "apps/neko-front-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/neko-front-e2e/cypress.json",
+            "tsConfig": "apps/neko-front-e2e/tsconfig.e2e.json",
+            "devServerTarget": "neko-front:serve:development"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "neko-front:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/neko-front-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "nekohit": {
+      "projectType": "application",
+      "root": "apps/nekohit",
+      "sourceRoot": "apps/nekohit/src",
+      "prefix": "ritmin",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/nekohit",
+            "index": "apps/nekohit/src/index.html",
+            "main": "apps/nekohit/src/main.ts",
+            "polyfills": "apps/nekohit/src/polyfills.ts",
+            "tsConfig": "apps/nekohit/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "apps/nekohit/src/favicon.ico",
+              "apps/nekohit/src/assets"
+            ],
+            "styles": [
+              "apps/nekohit/src/styles.scss",
+              "node_modules/primeng/resources/themes/saga-blue/theme.css",
+              "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/primeflex/primeflex.css"
+            ],
+            "scripts": ["node_modules/chart.js/dist/chart.js"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "4mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "apps/nekohit/src/environments/environment.ts",
+                  "with": "apps/nekohit/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "nekohit:build:production"
+            },
+            "development": {
+              "browserTarget": "nekohit:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "nekohit:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/nekohit/src/**/*.ts",
+              "apps/nekohit/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/nekohit"],
+          "options": {
+            "jestConfig": "apps/nekohit/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "nekohit-e2e": {
+      "root": "apps/nekohit-e2e",
+      "sourceRoot": "apps/nekohit-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/nekohit-e2e/cypress.json",
+            "tsConfig": "apps/nekohit-e2e/tsconfig.e2e.json",
+            "devServerTarget": "nekohit:serve:development"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "nekohit:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/nekohit-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/angular"
+  },
+  "schematics": {
+    "@nrwl/angular": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      },
+      "storybook-configuration": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
+    },
+    "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
+    }
+  },
+  "defaultProject": "nekohit"
+}
