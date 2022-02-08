@@ -55,9 +55,8 @@
     "primeng": "^12.2.0",
     "rxjs": "^6.4.0",
     "tslib": "^2.0.0",
-    "zone.js": "~0.11.4"
-  },
-  "devDependencies": {
+    "zone.js": "~0.11.4",
+    
     "@angular-devkit/build-angular": "~12.1.0",
     "@angular-eslint/eslint-plugin": "~12.3.0",
     "@angular-eslint/eslint-plugin-template": "~12.3.0",
@@ -88,5 +87,8 @@
     "ts-jest": "27.0.3",
     "ts-node": "~9.1.1",
     "typescript": "~4.3.5"
+  },
+  "devDependencies": {
+
   }
 }
