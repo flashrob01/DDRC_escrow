@@ -8,7 +8,7 @@
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main",
     "nx": "nx",
     "start": "ng serve nekohit",
-    "build": "ng build",
+    "build": "ng build --prod --aot",
     "test": "ng test",
     "lint": "nx workspace-lint && ng lint",
     "e2e": "ng e2e",
@@ -28,7 +28,7 @@
     "dep-graph": "nx dep-graph",
     "help": "nx help",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build c:/users/rob/projects/ddrc_escrow"
+    "deploy": "gh-pages -d build c:/users/rob/projects/ddrc_escrow/dist"
   },
   "private": true,
   "dependencies": {
